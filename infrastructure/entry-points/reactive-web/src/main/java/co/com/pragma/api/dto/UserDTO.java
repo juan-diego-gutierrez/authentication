@@ -25,7 +25,11 @@ public record UserDTO(
     @NotNull(message = "Base salary cannot be null")
     @DecimalMin(value = "0", message = "Base salary must be a value between 0 and 15,000,000")
     @DecimalMax(value = "15000000", message = "Base salary must be a value between 0 and 15,000,000")
-    BigDecimal baseSalary
+    BigDecimal baseSalary,
+    @NotNull(message = "Role cannot be empty")
+    Long roleId,
+    @NotBlank(message = "Password cannot be empty")
+    String password
 ) {
 
 }

@@ -1,6 +1,7 @@
 package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ErrorResponse;
+import co.com.pragma.usecase.user.exception.BusinessException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -8,10 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
-import co.com.pragma.usecase.user.exception.EmailAlreadyExistsException;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
@@ -33,7 +34,8 @@ public class GlobalErrorHandler implements WebExceptionHandler {
   }
 
   @Override
-  public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+  @NonNull
+  public Mono<Void> handle(@NonNull ServerWebExchange exchange, @NonNull Throwable ex) {
     HttpStatus status;
     Map<String, String> errors = new LinkedHashMap<>();
     String message;
@@ -42,9 +44,9 @@ public class GlobalErrorHandler implements WebExceptionHandler {
       status = HttpStatus.BAD_REQUEST;
       errors.putAll(invalidEx.getErrors());
       message = "Validation failed";
-    } else if (ex instanceof EmailAlreadyExistsException emailEx) {
+    } else if (ex instanceof BusinessException businessEx) {
       status = HttpStatus.CONFLICT;
-      errors.put("email", emailEx.getMessage());
+      errors.putAll(businessEx.getErrors());
       message = "Conflict";
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;

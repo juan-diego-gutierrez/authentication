@@ -1,8 +1,6 @@
 package co.com.pragma.api;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,9 +36,9 @@ class UserHandlerTest {
   @Test
   void testRegisterUser_Success() {
     UserDTO userDTO = new UserDTO("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St",
-        "1234567890", "john.doe@example.com", BigDecimal.valueOf(5000));
+        "1234567890", "john.doe@example.com", BigDecimal.valueOf(5000), 1L, "12345");
     User user = new User("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
-        "john.doe@example.com", BigDecimal.valueOf(5000));
+        "john.doe@example.com", BigDecimal.valueOf(5000), 1L, "12345");
 
     when(requestValidator.validate(any())).thenReturn(Mono.just(userDTO));
     when(userMapper.toUser(userDTO)).thenReturn(user);
@@ -60,7 +58,7 @@ class UserHandlerTest {
   void testGetUserByEmail_Success() {
     String email = "john.doe@example.com";
     User user = new User("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
-        email, BigDecimal.valueOf(5000));
+        email, BigDecimal.valueOf(5000), 1L, "12345");
 
     when(userUseCase.getUserByEmail(email)).thenReturn(Mono.just(user));
 

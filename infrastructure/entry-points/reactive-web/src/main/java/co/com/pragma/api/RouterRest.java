@@ -24,13 +24,17 @@ public class RouterRest {
           operation = @Operation(summary = "Get All Users", description = "This endpoint allows you to get all users.")),
       @RouterOperation(path = USERS_PATH
           + "/{email}", method = RequestMethod.GET, beanClass = UserHandler.class, beanMethod = "getUserByEmail",
-          operation = @Operation(summary = "Get User By Email", description = "This endpoint allows you to get an user by email."))
+          operation = @Operation(summary = "Get User By Email", description = "This endpoint allows you to get an user by email.")),
+      @RouterOperation(path = USERS_PATH
+          + "/login", method = RequestMethod.POST, beanClass = UserHandler.class, beanMethod = "login",
+          operation = @Operation(summary = "Login", description = "This endpoint allow you to login to make operations"))
   })
   public RouterFunction<ServerResponse> usersRoutes(UserHandler userHandler) {
     return route()
         .POST(USERS_PATH, userHandler::registerUser)
         .GET(USERS_PATH, userHandler::getAllUsers)
         .GET(USERS_PATH + "/{email}", userHandler::getUserByEmail)
+        .POST(USERS_PATH + "/login", userHandler::logIn)
         .build();
   }
 }
