@@ -1,10 +1,10 @@
 package co.com.pragma.model.user;
 
+import co.com.pragma.model.role.Role;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,4 +23,6 @@ public class User {
   private String phone;
   private String email;
   private BigDecimal baseSalary;
+  private Long roleId;
+  private String password;
 }

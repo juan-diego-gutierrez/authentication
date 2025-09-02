@@ -1,6 +1,8 @@
 package co.com.pragma.api;
 
+import co.com.pragma.api.dto.LogInDTO;
 import co.com.pragma.api.dto.SuccessResponse;
+import co.com.pragma.api.dto.TokenDTO;
 import co.com.pragma.api.dto.UserDTO;
 import co.com.pragma.api.exception.RequestValidator;
 import co.com.pragma.api.mapper.UserMapper;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -43,6 +46,8 @@ public class UserHandler {
       required = true,
       content = @Content(schema = @Schema(implementation = UserDTO.class))
   )
+  //@PreAuthorize("hasRole('admin') or hasRole('agent')")
+  @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('AGENT')")
   public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
     logger.info("Received request to register user");
 
@@ -72,6 +77,7 @@ public class UserHandler {
   @Parameters(
       @Parameter(name = "email", description = "Email of the user to retrieve", required = true)
   )
+  @PreAuthorize("hasRole('CLIENT')")
   public Mono<ServerResponse> getUserByEmail(ServerRequest serverRequest) {
     String email = serverRequest.pathVariable("email");
     return userUseCase.getUserByEmail(email)
@@ -88,6 +94,19 @@ public class UserHandler {
     return userUseCase.getAllUsers()
         .collectList()
         .flatMap(users -> ServerResponse.ok().bodyValue(users))
+        .switchIfEmpty(ServerResponse.notFound().build());
+  }
+
+  @Operation(summary = "Login an user", description = "This endpoint allows you to login an user.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Returns access token"),
+      @ApiResponse(responseCode = "400", description = "Bad credentials")
+  })
+  public Mono<ServerResponse> logIn(ServerRequest serverRequest) {
+    return serverRequest.bodyToMono(LogInDTO.class)
+        .flatMap(requestValidator::validate)
+        .flatMap(logInDTO -> userUseCase.login(logInDTO.email(), logInDTO.password()))
+        .flatMap(token -> ServerResponse.ok().bodyValue(new TokenDTO(token)))
         .switchIfEmpty(ServerResponse.notFound().build());
   }
 }

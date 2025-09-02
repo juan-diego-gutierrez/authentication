@@ -13,4 +13,6 @@ public interface UserRepository {
   Mono<User> getUserByEmail(String email);
 
   Mono<Boolean> userExists(String email);
+
+  Mono<String> login(String email, String password);
 }

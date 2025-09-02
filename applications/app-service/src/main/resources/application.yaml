@@ -30,6 +30,9 @@ springdoc:
     path: "/swagger-ui.html"
   api-docs:
     path: "/v3/api-docs"
+jwt:
+  secret: estoEsUnTextoParaValidarSiElTokenEstaFuncionandoCorrectamente
+  expiration: 360000
 management:
   endpoints:
     web:

@@ -1,7 +1,9 @@
 package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.user.User;
+import co.com.pragma.r2dbc.adapter.UserPostgresAdapter;
 import co.com.pragma.r2dbc.entity.UserEntity;
+import co.com.pragma.r2dbc.repository.UserPostgresRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.reactivecommons.utils.ObjectMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -27,13 +30,16 @@ class UserPostgresAdapterTest {
   UserPostgresRepository userPostgresRepository;
 
   @Mock
+  PasswordEncoder passwordEncoder;
+
+  @Mock
   ObjectMapper mapper;
 
   @Test
   void testSaveUser_Success() {
     User user = new User("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
-        "john.doe@example.com", BigDecimal.valueOf(5000));
-    UserEntity userEntity = new UserEntity(); // Crear una instancia de UserEntity
+        "john.doe@example.com", BigDecimal.valueOf(5000), 1L, "12345");
+    UserEntity userEntity = new UserEntity();
     userEntity.setName(user.getName());
     userEntity.setLastName(user.getLastName());
     userEntity.setBirthDate(user.getBirthDate());
@@ -54,9 +60,9 @@ class UserPostgresAdapterTest {
   @Test
   void testGetAllUsers_Success() {
     User user1 = new User("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
-        "john.doe@example.com", BigDecimal.valueOf(5000));
+        "john.doe@example.com", BigDecimal.valueOf(5000), 1L, "12345");
     User user2 = new User("Jane", "Doe", LocalDate.of(1992, 1, 1), "456 Main St", "0987654321",
-        "jane.doe@example.com", BigDecimal.valueOf(6000));
+        "jane.doe@example.com", BigDecimal.valueOf(6000), 1L, "12345");
 
     UserEntity userEntity1 = new UserEntity();
     userEntity1.setName(user1.getName());
@@ -89,7 +95,7 @@ class UserPostgresAdapterTest {
   void testGetUserByEmail_Success() {
     String email = "john.doe@example.com";
     User user = new User("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
-        email, BigDecimal.valueOf(5000));
+        email, BigDecimal.valueOf(5000), 1L, "12345");
     UserEntity userEntity = new UserEntity();
     userEntity.setName(user.getName());
     userEntity.setLastName(user.getLastName());

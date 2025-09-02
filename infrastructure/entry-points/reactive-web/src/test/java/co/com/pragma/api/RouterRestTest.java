@@ -15,8 +15,8 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -25,7 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @ContextConfiguration(classes = {RouterRest.class, UserHandler.class})
-@WebFluxTest
+@WebFluxTest(excludeAutoConfiguration = {ReactiveSecurityAutoConfiguration.class})
 class RouterRestTest {
 
   @Autowired
@@ -41,10 +41,10 @@ class RouterRestTest {
   @Test
   void testRegisterUser_Success() {
     UserDTO userDTO = new UserDTO("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St",
-        "1234567890", "john.doe@example.com", BigDecimal.valueOf(5000));
+        "1234567890", "john.doe@example.com", BigDecimal.valueOf(5000), 1L, "12345");
 
     User user = new User("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St",
-        "1234567890", "john.doe@example.com", BigDecimal.valueOf(5000));
+        "1234567890", "john.doe@example.com", BigDecimal.valueOf(5000), 1L, "12345");
 
     when(requestValidator.validate(any())).thenReturn(Mono.just(userDTO));
     when(userMapper.toUser(userDTO)).thenReturn(user);
@@ -65,9 +65,9 @@ class RouterRestTest {
   @Test
   void testGetAllUsers_Success() {
     User user1 = new User("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
-        "john.doe@example.com", BigDecimal.valueOf(5000));
+        "john.doe@example.com", BigDecimal.valueOf(5000), 1L, "12345");
     User user2 = new User("Jane", "Doe", LocalDate.of(1992, 1, 1), "456 Main St", "0987654321",
-        "jane.doe@example.com", BigDecimal.valueOf(6000));
+        "jane.doe@example.com", BigDecimal.valueOf(6000), 1L, "12345");
 
     when(userUseCase.getAllUsers()).thenReturn(Flux.just(user1, user2));
 
@@ -93,7 +93,7 @@ class RouterRestTest {
   void testGetUserByEmail_Success() {
     String email = "john.doe@example.com";
     User user = new User("John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
-        email, BigDecimal.valueOf(5000));
+        email, BigDecimal.valueOf(5000), 1L, "12345");
 
     when(userUseCase.getUserByEmail(email)).thenReturn(Mono.just(user));
 

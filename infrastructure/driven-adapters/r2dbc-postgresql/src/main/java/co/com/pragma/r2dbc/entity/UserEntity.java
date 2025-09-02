@@ -4,6 +4,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -12,6 +14,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +23,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Getter
 @Setter
 @Table("users")
-public class UserEntity {
+public class UserEntity implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +39,17 @@ public class UserEntity {
   private String email;
   @Column("base_salary")
   private BigDecimal baseSalary;
+  @Column("id_role")
+  private Long roleId;
+  private String password;
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of();
+  }
+
+  @Override
+  public String getUsername() {
+    return email;
+  }
 }
