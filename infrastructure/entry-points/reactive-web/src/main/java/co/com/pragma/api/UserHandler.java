@@ -77,7 +77,7 @@ public class UserHandler {
   @Parameters(
       @Parameter(name = "email", description = "Email of the user to retrieve", required = true)
   )
-  @PreAuthorize("hasRole('CLIENT')")
+  @PreAuthorize("hasAuthority('CLIENT')")
   public Mono<ServerResponse> getUserByEmail(ServerRequest serverRequest) {
     String email = serverRequest.pathVariable("email");
     return userUseCase.getUserByEmail(email)
